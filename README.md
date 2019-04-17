@@ -15,35 +15,20 @@
   limitations under the License.
 -->
 
-# Apache Hadoop base image
+# Spark binary
 
-This is the definition of the Apache Hadoop base image. It doesn't use any Hadoop distribution just the scripts to run any Hadoop from source or from a prebuild package.
+A spark docker image created for integration testing with Hadoop.
 
 ## Build
 
 To create a local version of this image use the following command:
 
 ```
-docker build -t apache/hadoop-runner .
+docker build -t <dotker-accounr>/spark:v1 .
 ```
 
 ## Usage
 
-Do a full build on Apache Hadoop trunk with the `hdds` profile enabled.
 ```
-mvn clean install package -DskipTests -Pdist,hdds -Dtar -Dmaven.javadoc.skip=true
-```
-
-Then start HDDS services with `docker-compose`.
-
-```
-cd hadoop-dist/target/compose/ozone
-docker-compose up -d
-```
-
-## Troubleshooting
-
-If `docker-compose` fails to work, check that the `hadoop-dist/target/compose/ozone/.env` file exists and has a line like the following (the exact version number may be different):
-```
-    HDDS_VERSION=0.2.1-SNAPSHOT
+docker run -it <dotker-accounr>/spark:v1 bash
 ```
