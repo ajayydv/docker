@@ -17,8 +17,10 @@
 # limitations under the License.
 ##
 set -e
-
+export TERM=xterm
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+
 
 if [ -n "$SLEEP_SECONDS" ]; then
    echo "Sleeping for $SLEEP_SECONDS seconds"
@@ -153,4 +155,19 @@ if [ -n "$BYTEMAN_SCRIPT" ] || [ -n "$BYTEMAN_SCRIPT_URL" ]; then
   echo "Process is instrumented with adding $AGENT_STRING to HADOOP_OPTS"
 fi
 
+if [ -z "$SPARK_DOWNLOAD_URL" ]; then
+  SPARK_DOWNLOAD_URL=https://www-us.apache.org/dist/spark/spark-2.4.1/spark-2.4.1-bin-hadoop2.7.tgz
+fi
+
+echo "Downloading spark: $SPARK_DOWNLOAD_URL"
+wget $SPARK_DOWNLOAD_URL -P /tmp/
+tar -xvf /tmp/spark*tgz -C /tmp/
+rm -rf /tmp/spark*tgz
+mv /tmp/spark*  /opt/spark
+mv /opt/spark/conf/spark-env.sh.template /opt/spark/conf/spark-env.sh
+mv /opt/spark/conf/spark-defaults.conf.template /opt/spark/conf/spark-defaults.conf
+echo 'export HADOOP_CONF_DIR=/opt/hadoop/etc/hadoop/' >> /opt/spark/conf/spark-env.sh
+echo 'spark.master yarn' >> /opt/spark/conf/spark-defaults.conf
+echo 'spark.yarn.keytab /etc/security/keytabs/spark.keytab' >> /opt/spark/conf/spark-defaults.conf
+echo 'spark.yarn.principal spark/spark@EXAMPLE.COM' >> /opt/spark/conf/spark-defaults.conf
 "$@"
